@@ -8,11 +8,7 @@ import os
 import gdown
 from zipfile import ZipFile
 
-"""
-## Prepare CelebA data
 
-We'll use face images from the CelebA dataset, resized to 64x64.
-"""
 
 os.makedirs("celeba_gan")
 
@@ -23,19 +19,12 @@ gdown.download(url, output, quiet=True)
 with ZipFile("celeba_gan/data.zip", "r") as zipobj:
     zipobj.extractall("celeba_gan")
 
-"""
-Create a dataset from our folder, and rescale the images to the [0-1] range:
-"""
 
 dataset = keras.preprocessing.image_dataset_from_directory(
     "celeba_gan", label_mode=None, image_size=(64, 64), batch_size=32
 )
 dataset = dataset.map(lambda x: x / 255.0)
 
-
-"""
-Let's display a sample image:
-"""
 
 
 for x in dataset:
@@ -44,11 +33,6 @@ for x in dataset:
     break
 
 
-"""
-## Create the discriminator
-
-It maps a 64x64 image to a binary classification score.
-"""
 
 discriminator = keras.Sequential(
     [
@@ -67,11 +51,7 @@ discriminator = keras.Sequential(
 )
 discriminator.summary()
 
-"""
-## Create the generator
 
-It mirrors the discriminator, replacing `Conv2D` layers with `Conv2DTranspose` layers.
-"""
 
 latent_dim = 128
 
@@ -92,9 +72,6 @@ generator = keras.Sequential(
 )
 generator.summary()
 
-"""
-## Override `train_step`
-"""
 
 
 class GAN(keras.Model):
@@ -165,10 +142,6 @@ class GAN(keras.Model):
         }
 
 
-"""
-## Create a callback that periodically saves generated images
-"""
-
 
 class GANMonitor(keras.callbacks.Callback):
     def __init__(self, num_img=3, latent_dim=128):
@@ -185,9 +158,7 @@ class GANMonitor(keras.callbacks.Callback):
             img.save("generated_img_%03d_%d.png" % (epoch, i))
 
 
-"""
-## Train the end-to-end model
-"""
+
 
 epochs = 1 
 
@@ -202,9 +173,4 @@ gan.fit(
     dataset, epochs=epochs, callbacks=[GANMonitor(num_img=10, latent_dim=latent_dim)]
 )
 
-"""
-Some of the last generated images around epoch 30
-(results keep improving after that):
 
-![results](https://i.imgur.com/h5MtQZ7l.png)
-"""
