@@ -131,10 +131,10 @@ class GAN(keras.Model):
         labels = tf.concat(
             [tf.ones((batch_size, 1)), tf.zeros((batch_size, 1))], axis=0
         )
-        # Add random noise to the labels - important trick!
+        
         labels += 0.05 * tf.random.uniform(tf.shape(labels))
 
-        # Train the discriminator
+      
         with tf.GradientTape() as tape:
             predictions = self.discriminator(combined_images)
             d_loss = self.loss_fn(labels, predictions)
